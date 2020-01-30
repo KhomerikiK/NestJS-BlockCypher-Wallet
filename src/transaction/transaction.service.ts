@@ -17,7 +17,7 @@ export class TransactionService {
 
 
     /**
-     * createTransaction
+     * create Transaction object to get information and then use in send transaction
      */
     public async createTransaction(createTransactionDto: CreateTransactionDto) {
         try {
@@ -46,7 +46,11 @@ export class TransactionService {
 
 
     /**
-     * signTransaction
+     * sign created transaction
+     * @param tmptx created transaction object
+     * @param coin string abreviation of the crypto coin
+     * @param private_key private key of the address
+     * @returns signed transaction object if the status is 1
      */
     public async signTransaction(tmptx, coin, private_key) {
         
@@ -70,16 +74,20 @@ export class TransactionService {
 
 
     /**
-     * name
+     * send signed transaction
+     * @param createTransactionDto data transfer object declared in dto folder
+     * @returns sent transaction object if status is 1
      */
     public async sendTransaction(createTransactionDto: CreateTransactionDto) {
         try {
             const createdTx = await this.createTransaction(createTransactionDto);
+            //check if created transaction status
             if (createdTx.status) {
     
                 const tmptx = createdTx.data;
                 const private_key = createTransactionDto.private_key;
                 const coin = createTransactionDto.coin;
+                //send signed transaction
                 const  signedTransaction = await this.signTransaction(tmptx, coin, private_key);
                 if (signedTransaction.status) {
                     const endpoint = 'txs/send'

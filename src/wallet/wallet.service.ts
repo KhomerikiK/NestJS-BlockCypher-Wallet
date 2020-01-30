@@ -14,14 +14,14 @@ export class WalletService {
      */
     public async createWallet(createWalletDto: CreateWalletDto) {
       try {
+        //generate random string for wallet name
         let name = Helper.generateRandomId(25);
         let coin = createWalletDto.coin;
         let PostData = {"name": name, "addresses": []};
         let endpoint = 'wallets'
         let url = Helper.buildApiUrl(coin, endpoint);
-        
-        const result = await this.httpService.post( url, JSON.stringify(PostData)).toPromise();
 
+        const result = await this.httpService.post( url, JSON.stringify(PostData)).toPromise();
         return {status:1, data: result.data};
       } catch (error) {
         return {status:0, data: error.message};
@@ -63,6 +63,7 @@ export class WalletService {
         let address = result.data.address;
        
 
+        //build data transfer object for receiving transaction webhook
         addressWebhookDto={
           coin:coin,
           event:'unconfirmed-tx',
@@ -71,6 +72,7 @@ export class WalletService {
         }
         this.addAddressWebhook(addressWebhookDto);
 
+        //build data transfer object for receiving confirmation webhook
         addressWebhookDto={
           coin:coin,
           event:'tx-confirmation',
